@@ -20,8 +20,6 @@ valid_nd = nd.load('valid_resnet152_v1.nd')
 
 input_nd = nd.load('input_resnet152_v1.nd')
 
-test_nd = nd.load('test_resnet152_v1.nd')
-
 f = open('ids_synsets','rb')
 ids_synsets = pickle.load(f)
 f.close()
@@ -38,7 +36,6 @@ modelparams='1'
 train_data = gluon.data.DataLoader(gluon.data.ArrayDataset(train_nd[0],train_nd[1]), batch_size=batch_size,shuffle=True)
 valid_data = gluon.data.DataLoader(gluon.data.ArrayDataset(valid_nd[0],valid_nd[1]), batch_size=batch_size,shuffle=True)
 input_data = gluon.data.DataLoader(gluon.data.ArrayDataset(input_nd[0],input_nd[1]), batch_size=batch_size,shuffle=True)
-test_data = gluon.data.DataLoader(gluon.data.ArrayDataset(test_nd[0],test_nd[1]), batch_size=batch_size,shuffle=True)
 
 def get_net(ctx):
     net = nn.HybridSequential()
