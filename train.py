@@ -24,10 +24,10 @@ f = open('ids_synsets','rb')
 ids_synsets = pickle.load(f)
 f.close()
 
-num_epochs = 20
+num_epochs = 100
 batch_size = 128
-learning_rate = 1e-5
-weight_decay = 1e-1
+learning_rate = 1e-4
+weight_decay = 1e-5
 lr_period = 40
 lr_decay = 0.5
 pngname='1'
@@ -41,7 +41,7 @@ def get_net(ctx):
     net = nn.HybridSequential()
     with net.name_scope():
         net.add(nn.Dense(256, activation="relu"))
-        net.add(nn.Dropout(.5))
+        net.add(nn.Dropout(.7))
         net.add(nn.Dense(120))
     net.initialize(init = init.Xavier(),ctx=ctx)
     return net
@@ -111,5 +111,5 @@ ctx = mx.gpu()
 net = get_net(ctx)
 net.hybridize()
 
-train(net, train_data,valid_data, num_epochs, learning_rate, weight_decay, 
+train(net, input_data,None, num_epochs, learning_rate, weight_decay, 
       ctx, lr_period, lr_decay)

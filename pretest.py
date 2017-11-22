@@ -17,7 +17,7 @@ import numpy as np
 from tqdm import tqdm
 
 
-data_dir = '../data/kaggle_dog'
+data_dir = './data'
 test_dir = 'test'
 input_dir = 'train_valid_test'
 
@@ -49,8 +49,8 @@ valid_ds = vision.ImageFolderDataset(input_str + valid_dir, flag=1,
 
 loader = gluon.data.DataLoader
 
-test_data = loader(test_ds, 128, shuffle=False, last_batch='keep')
-valid_data = loader(valid_ds, 128, shuffle=True, last_batch='keep')
+test_data = loader(test_ds, 64, shuffle=False, last_batch='keep')
+valid_data = loader(valid_ds, 64, shuffle=True, last_batch='keep')
 
 def get_loss(data, net, ctx):
     loss = 0.0
@@ -94,5 +94,5 @@ net.hybridize()
 softmax_cross_entropy = gluon.loss.SoftmaxCrossEntropyLoss()
 print(get_loss(valid_data,net,mx.gpu()))
 
-SaveTest(test_data,net,mx.gpu(),'pp.csv',ids_synsets[0],ids_synsets[1])
+SaveTest(test_data,net,mx.gpu(),'ppp.csv',ids_synsets[0],ids_synsets[1])
 

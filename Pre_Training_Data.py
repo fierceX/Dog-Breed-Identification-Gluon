@@ -10,7 +10,7 @@ import pickle
 from tqdm import tqdm
 import os
 
-data_dir = '../data/kaggle_dog'
+data_dir = './data'
 train_dir = 'train'
 test_dir = 'test'
 valid_dir = 'valid'
@@ -21,7 +21,7 @@ train_valid_dir = 'train_valid'
 input_str = data_dir + '/' + input_dir + '/'
 
 
-batch_size = 256
+batch_size = 64
 
 def transform_train(data, label):
     im = image.imresize(data.astype('float32') / 255, 224, 224)
