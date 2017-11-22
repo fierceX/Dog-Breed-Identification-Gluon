@@ -11,31 +11,34 @@ from mxnet.gluon.data import vision
 from mxnet.gluon import nn
 from mxnet import nd
 import pandas as pd
+import mxnet as mx
+import pickle
 
-trainx = nd.load('train_resnet152_v1_x.nd')
-trainl = nd.load('train_resnet152_v1_y.nd')
+train_nd = nd.load('train_resnet152_v1.nd')
 
-validx = nd.load('valid_resnet152_v1_x.nd')
-validl = nd.load('valid_resnet152_v1_y.nd')
+valid_nd = nd.load('valid_resnet152_v1.nd')
 
-inputx = nd.load('input_resnet152_v1_x.nd')
-inputl = nd.load('input_resnet152_v1_y.nd')
+input_nd = nd.load('input_resnet152_v1.nd')
 
-testx = nd.load('test_resnet152_v1_x.nd')
+test_nd = nd.load('test_resnet152_v1.nd')
+
+f = open('ids_synsets','rb')
+ids_synsets = pickle.load(f)
+f.close()
 
 num_epochs = 20
 batch_size = 128
 learning_rate = 1e-5
 weight_decay = 1e-1
-#lr_period = 40
-#lr_decay = 0.5
+lr_period = 40
+lr_decay = 0.5
 pngname='1'
 modelparams='1'
 
-train_data = gluon.data.DataLoader(gluon.data.ArrayDataset(trainx[0],trainl[0]), batch_size=batch_size,shuffle=True)
-valid_data = gluon.data.DataLoader(gluon.data.ArrayDataset(validx[0],validl[0]), batch_size=batch_size,shuffle=True)
-input_data = gluon.data.DataLoader(gluon.data.ArrayDataset(inputx[0],inputl[0]), batch_size=batch_size,shuffle=True)
-test_data = gluon.data.DataLoader(testx[0], batch_size=batch_size,shuffle=True)
+train_data = gluon.data.DataLoader(gluon.data.ArrayDataset(train_nd[0],train_nd[1]), batch_size=batch_size,shuffle=True)
+valid_data = gluon.data.DataLoader(gluon.data.ArrayDataset(valid_nd[0],valid_nd[1]), batch_size=batch_size,shuffle=True)
+input_data = gluon.data.DataLoader(gluon.data.ArrayDataset(input_nd[0],input_nd[1]), batch_size=batch_size,shuffle=True)
+test_data = gluon.data.DataLoader(gluon.data.ArrayDataset(test_nd[0],test_nd[1]), batch_size=batch_size,shuffle=True)
 
 def get_net(ctx):
     net = nn.HybridSequential()
@@ -113,22 +116,3 @@ net.hybridize()
 
 train(net, train_data,valid_data, num_epochs, learning_rate, weight_decay, 
       ctx, lr_period, lr_decay)
-
-import mxnet as mx
-def SaveTest(data,net,ctx,name,bs):
-    outputs = nd.zeros((len(testx[0]),120),ctx=mx.cpu())
-    for i,fear in enumerate(data):
-        n = len(fear)
-        print(n)
-        if n == bs:
-            outputs[i*bs:(i+1)*bs] = net(fear.as_in_context(ctx)).as_in_context(mx.cpu())
-        else:
-            outputs[i*bs:] = net(fear.as_in_context(ctx)).as_in_context(mx.cpu())
-    df_pred = pd.read_csv('sample_submission.csv')
-
-    for i, c in enumerate(df_pred.columns[1:]):
-        df_pred[c] = outputs[:,i].asnumpy()
-
-    df_pred.to_csv(name, index=None)
-
-SaveTest(test_data,net,ctx,'pred.csv',128)
