@@ -19,7 +19,7 @@ train_nd = nd.load('train_inception_v3.nd')
 
 valid_nd = nd.load('valid_inception_v3.nd')
 
-input_nd = nd.load('input_inception_v3.nd')
+#input_nd = nd.load('input_inception_v3.nd')
 
 f = open('ids_synsets','rb')
 ids_synsets = pickle.load(f)
@@ -36,7 +36,7 @@ modelparams='2'
 
 train_data = gluon.data.DataLoader(gluon.data.ArrayDataset(train_nd[0],train_nd[1]), batch_size=batch_size,shuffle=True)
 valid_data = gluon.data.DataLoader(gluon.data.ArrayDataset(valid_nd[0],valid_nd[1]), batch_size=batch_size,shuffle=True)
-input_data = gluon.data.DataLoader(gluon.data.ArrayDataset(input_nd[0],input_nd[1]), batch_size=batch_size,shuffle=True)
+#input_data = gluon.data.DataLoader(gluon.data.ArrayDataset(input_nd[0],input_nd[1]), batch_size=batch_size,shuffle=True)
 
 
 def get_loss(data, net, ctx):
@@ -104,5 +104,5 @@ ctx = mx.gpu()
 net = get_output(ctx)
 net.hybridize()
 
-train(net, input_data,None, num_epochs, learning_rate, weight_decay, 
+train(net, train_data,valid_data, num_epochs, learning_rate, weight_decay, 
       ctx, lr_period, lr_decay)
