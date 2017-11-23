@@ -9,6 +9,7 @@ import pandas as pd
 import pickle
 from tqdm import tqdm
 import os
+from model import get_features
 
 data_dir = './data'
 train_dir = 'train'
@@ -63,11 +64,7 @@ train_valid_data = loader(train_valid_ds, batch_size, shuffle=True,
                           last_batch='keep')
 test_data = loader(test_ds, batch_size, shuffle=False, last_batch='keep')
 
-def getnet(ctx):
-    resnet = gluon.model_zoo.vision.resnet152_v1(pretrained=True,ctx=ctx)
-    return resnet.features
-
-net = getnet(mx.gpu())
+net = get_features(mx.gpu())
 net.hybridize()
 
 def SaveNd(data,net,name):

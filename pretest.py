@@ -15,20 +15,22 @@ import mxnet as mx
 import pickle
 import numpy as np
 from tqdm import tqdm
+from model import get_net
 
 
 data_dir = './data'
 test_dir = 'test'
 input_dir = 'train_valid_test'
-
 valid_dir = 'valid'
 
 netparams = '1'
+csvname = 'pp.csv'
+ids_synsets_name = 'ids_synsets'
 
 input_str = data_dir + '/' + input_dir + '/'
 
 
-f = open('ids_synsets','rb')
+f = open(ids_synsets_name,'rb')
 ids_synsets = pickle.load(f)
 f.close()
 
@@ -61,22 +63,6 @@ def get_loss(data, net, ctx):
         loss += nd.mean(cross_entropy).asscalar()
     return loss / len(data)
 
-def get_net(name,ctx):
-    classer = nn.HybridSequential()
-    with classer.name_scope():
-        classer.add(nn.Dense(256, activation="relu"))
-        classer.add(nn.Dropout(.5))
-        classer.add(nn.Dense(120))
-    classer.collect_params().load(name,ctx)
-
-    resnet = gluon.model_zoo.vision.resnet152_v1(pretrained=True,ctx=ctx)
-    
-    net = nn.HybridSequential()
-    with net.name_scope():
-        net.add(resnet.features)
-        net.add(classer)
-    return net
-
 def SaveTest(test_data,net,ctx,name,ids,synsets):
     outputs = []
     for data, label in tqdm(test_data):
@@ -94,5 +80,5 @@ net.hybridize()
 softmax_cross_entropy = gluon.loss.SoftmaxCrossEntropyLoss()
 print(get_loss(valid_data,net,mx.gpu()))
 
-SaveTest(test_data,net,mx.gpu(),'ppp.csv',ids_synsets[0],ids_synsets[1])
+SaveTest(test_data,net,mx.gpu(),csvname,ids_synsets[0],ids_synsets[1])
 

@@ -13,6 +13,7 @@ from mxnet import nd
 import pandas as pd
 import mxnet as mx
 import pickle
+from model import get_output
 
 train_nd = nd.load('train_resnet152_v1.nd')
 
@@ -37,14 +38,6 @@ train_data = gluon.data.DataLoader(gluon.data.ArrayDataset(train_nd[0],train_nd[
 valid_data = gluon.data.DataLoader(gluon.data.ArrayDataset(valid_nd[0],valid_nd[1]), batch_size=batch_size,shuffle=True)
 input_data = gluon.data.DataLoader(gluon.data.ArrayDataset(input_nd[0],input_nd[1]), batch_size=batch_size,shuffle=True)
 
-def get_net(ctx):
-    net = nn.HybridSequential()
-    with net.name_scope():
-        net.add(nn.Dense(256, activation="relu"))
-        net.add(nn.Dropout(.7))
-        net.add(nn.Dense(120))
-    net.initialize(init = init.Xavier(),ctx=ctx)
-    return net
 
 def get_loss(data, net, ctx):
     loss = 0.0
@@ -108,7 +101,7 @@ def train(net, train_data, valid_data, num_epochs, lr, wd, ctx, lr_period,
     net.collect_params().save(modelparams)
 
 ctx = mx.gpu()
-net = get_net(ctx)
+net = get_output(ctx)
 net.hybridize()
 
 train(net, input_data,None, num_epochs, learning_rate, weight_decay, 
