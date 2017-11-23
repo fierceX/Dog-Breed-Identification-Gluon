@@ -25,8 +25,8 @@ input_str = data_dir + '/' + input_dir + '/'
 batch_size = 64
 
 def transform_train(data, label):
-    im = image.imresize(data.astype('float32') / 255, 224, 224)
-    auglist = image.CreateAugmenter(data_shape=(3, 224, 224), resize=0, 
+    im = image.imresize(data.astype('float32') / 255, 299, 299)
+    auglist = image.CreateAugmenter(data_shape=(3, 299, 299), resize=0, 
                         rand_crop=False, rand_resize=False, rand_mirror=True,
                         mean=np.array([0.485, 0.456, 0.406]), std=np.array([0.229, 0.224, 0.225]), 
                         brightness=0, contrast=0, 
@@ -39,8 +39,8 @@ def transform_train(data, label):
     return (im, nd.array([label]).asscalar().astype('float32'))
 
 def transform_test(data, label):
-    im = image.imresize(data.astype('float32') / 255, 224, 224)
-    auglist = image.CreateAugmenter(data_shape=(3, 224, 224),
+    im = image.imresize(data.astype('float32') / 255, 299, 299)
+    auglist = image.CreateAugmenter(data_shape=(3, 299, 299),
                         mean=np.array([0.485, 0.456, 0.406]),
                         std=np.array([0.229, 0.224, 0.225]))
     for aug in auglist:
@@ -80,9 +80,9 @@ def SaveNd(data,net,name):
     nd.save(name,[x,y])
 
 
-SaveNd(train_data,net,'train_resnet152_v1.nd')
-SaveNd(valid_data,net,'valid_resnet152_v1.nd')
-SaveNd(train_valid_data,net,'input_resnet152_v1.nd')
+SaveNd(train_data,net,'train_inception_v3.nd')
+SaveNd(valid_data,net,'valid_inception_v3.nd')
+SaveNd(train_valid_data,net,'input_inception_v3.nd')
 # SaveNd(test_data,net,'test_resnet152_v1.nd')
 ids = ids = sorted(os.listdir(os.path.join(data_dir, input_dir, 'test/unknown')))
 synsets = train_valid_ds.synsets

@@ -15,11 +15,11 @@ import mxnet as mx
 import pickle
 from model import get_output
 
-train_nd = nd.load('train_resnet152_v1.nd')
+train_nd = nd.load('train_inception_v3.nd')
 
-valid_nd = nd.load('valid_resnet152_v1.nd')
+valid_nd = nd.load('valid_inception_v3.nd')
 
-input_nd = nd.load('input_resnet152_v1.nd')
+input_nd = nd.load('input_inception_v3.nd')
 
 f = open('ids_synsets','rb')
 ids_synsets = pickle.load(f)
@@ -28,11 +28,11 @@ f.close()
 num_epochs = 100
 batch_size = 128
 learning_rate = 1e-4
-weight_decay = 1e-5
+weight_decay = 1e-4
 lr_period = 40
 lr_decay = 0.5
-pngname='1'
-modelparams='1'
+pngname='2'
+modelparams='2'
 
 train_data = gluon.data.DataLoader(gluon.data.ArrayDataset(train_nd[0],train_nd[1]), batch_size=batch_size,shuffle=True)
 valid_data = gluon.data.DataLoader(gluon.data.ArrayDataset(valid_nd[0],valid_nd[1]), batch_size=batch_size,shuffle=True)

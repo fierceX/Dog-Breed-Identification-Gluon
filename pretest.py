@@ -23,8 +23,8 @@ test_dir = 'test'
 input_dir = 'train_valid_test'
 valid_dir = 'valid'
 
-netparams = '1'
-csvname = 'pp.csv'
+netparams = '2'
+csvname = 'p1.csv'
 ids_synsets_name = 'ids_synsets'
 
 input_str = data_dir + '/' + input_dir + '/'
@@ -35,8 +35,8 @@ ids_synsets = pickle.load(f)
 f.close()
 
 def transform_test(data, label):
-    im = image.imresize(data.astype('float32') / 255, 224, 224)
-    auglist = image.CreateAugmenter(data_shape=(3, 224, 224),
+    im = image.imresize(data.astype('float32') / 255, 299, 299)
+    auglist = image.CreateAugmenter(data_shape=(3, 299, 299),
                         mean=np.array([0.485, 0.456, 0.406]),
                         std=np.array([0.229, 0.224, 0.225]))
     for aug in auglist:
