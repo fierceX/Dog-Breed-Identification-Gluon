@@ -15,10 +15,10 @@ import mxnet as mx
 import pickle
 import numpy as np
 from tqdm import tqdm
-from model import get_output,get_features1,get_features2,transform_test
+from model import get_net,transform_test
 
 
-data_dir = './data'
+data_dir = '../data/kaggle_dog'
 test_dir = 'test'
 input_dir = 'train_valid_test'
 valid_dir = 'valid'
@@ -42,26 +42,26 @@ valid_ds = vision.ImageFolderDataset(input_str + valid_dir, flag=1,
 
 loader = gluon.data.DataLoader
 
-test_data = loader(test_ds, 32, shuffle=False, last_batch='keep')
-valid_data = loader(valid_ds, 32, shuffle=True, last_batch='keep')
+test_data = loader(test_ds, 128, shuffle=False, last_batch='keep')
+valid_data = loader(valid_ds, 128, shuffle=True, last_batch='keep')
 
-def get_loss(data, net,net1,net2, ctx):
+def get_loss(data, net, ctx):
     loss = 0.0
     for feas1,feas2, label in tqdm(data):
         label = label.as_in_context(ctx)
-        out1 = net1(feas1.as_in_context(ctx))
-        out2 = net2(feas2.as_in_context(ctx))
-        output = net(nd.concat(*[out1,out2]))
+        feas1 = feas1.as_in_context(ctx)
+        feas2 = feas2.as_in_context(ctx)
+        output = net(feas1,feas2)
         cross_entropy = softmax_cross_entropy(output, label)
         loss += nd.mean(cross_entropy).asscalar()
     return loss / len(data)
 
-def SaveTest(test_data,net,net1,net2,ctx,name,ids,synsets):
+def SaveTest(test_data,net,ctx,name,ids,synsets):
     outputs = []
     for data1,data2, label in tqdm(test_data):
-        out1 = net1(data1.as_in_context(ctx))
-        out2 = net2(data2.as_in_context(ctx))
-        output = nd.softmax(net(nd.concat(*[out1,out2])))
+        data1 =data1.as_in_context(ctx)
+        data2 =data2.as_in_context(ctx)
+        output = nd.softmax(net(data1,data2))
         outputs.extend(output.asnumpy())
     with open(name, 'w') as f:
         f.write('id,' + ','.join(synsets) + '\n')
@@ -69,13 +69,11 @@ def SaveTest(test_data,net,net1,net2,ctx,name,ids,synsets):
             f.write(i.split('.')[0] + ',' + ','.join(
                 [str(num) for num in output]) + '\n')
 
-net = get_output(mx.gpu(),netparams)
+net = get_net(netparams,mx.gpu())
 net.hybridize()
-net1 = get_features1(mx.gpu())
-net2 = get_features2(mx.gpu())
 
 softmax_cross_entropy = gluon.loss.SoftmaxCrossEntropyLoss()
-print(get_loss(valid_data,net,net1,net2,mx.gpu()))
+print(get_loss(valid_data,net,mx.gpu()))
 
-SaveTest(test_data,net,net1,net2,mx.gpu(),csvname,ids_synsets[0],ids_synsets[1])
+SaveTest(test_data,net,mx.gpu(),csvname,ids_synsets[0],ids_synsets[1])
 

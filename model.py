@@ -14,6 +14,12 @@ def get_features1(ctx):
     resnet = vision.resnet152_v1(pretrained=True,ctx=ctx)
     return resnet.features
 
+def get_features(ctx):
+    features1 = get_features1(ctx)
+    features2 = get_features2(ctx)
+    net = ConcatNet(features1,features2)
+    return net
+
 def get_output(ctx,ParamsName=None):
     net = nn.HybridSequential()
     with net.name_scope():
@@ -26,13 +32,30 @@ def get_output(ctx,ParamsName=None):
         net.initialize(init = init.Xavier(),ctx=ctx)
     return net
 
+class  ConcatNet(nn.HybridBlock):
+    def __init__(self,net1,net2,**kwargs):
+        super(ConcatNet,self).__init__(**kwargs)
+        self.net1 = nn.HybridSequential()
+        self.net1.add(net1)
+        self.net1.add(nn.GlobalAvgPool2D())
+        self.net2 = nn.HybridSequential()
+        self.net2.add(net2)
+        self.net2.add(nn.GlobalAvgPool2D())
+    def hybrid_forward(self,F,x1,x2):
+        return F.concat(*[self.net1(x1),self.net2(x2)])
+
+class  OneNet(nn.HybridBlock):
+    def __init__(self,features,output,**kwargs):
+        super(OneNet,self).__init__(**kwargs)
+        self.features = features
+        self.output = output
+    def hybrid_forward(self,F,x1,x2):
+        return self.output(self.features(x1,x2))
+
 def get_net(ParamsName,ctx):
     output = get_output(ctx,ParamsName)
     features = get_features(ctx)
-    net = nn.HybridSequential()
-    with net.name_scope():
-        net.add(features)
-        net.add(output)
+    net = OneNet(features,output)
     return net
 
 def transform_train(data, label):
