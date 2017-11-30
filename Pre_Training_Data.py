@@ -1,17 +1,14 @@
 from mxnet import gluon
-from mxnet import image
 from mxnet import nd
 from mxnet.gluon.data import vision
-from mxnet import nd
 import numpy as np
 import mxnet as mx
-import pandas as pd
 import pickle
 from tqdm import tqdm
 import os
-from model import get_features,transform_test,transform_train
+from model import get_features,transform_train,transform_test
 
-data_dir = '../data/kaggle_dog'
+data_dir = './data'
 train_dir = 'train'
 test_dir = 'test'
 valid_dir = 'valid'
@@ -30,8 +27,6 @@ valid_ds = vision.ImageFolderDataset(input_str + valid_dir, flag=1,
                                      transform=transform_test)
 train_valid_ds = vision.ImageFolderDataset(input_str + train_valid_dir,
                                            flag=1, transform=transform_train)
-test_ds = vision.ImageFolderDataset(input_str + test_dir, flag=1,
-                                     transform=transform_test)
 
 loader = gluon.data.DataLoader
 train_data = loader(train_ds, batch_size, shuffle=True, last_batch='keep')
@@ -60,10 +55,9 @@ def SaveNd(data,net,name):
     nd.save(name,[x,y])
 
 
-SaveNd(train_data,net,'train_inception_v3.nd')
-SaveNd(valid_data,net,'valid_inception_v3.nd')
-SaveNd(train_valid_data,net,'input_inception_v3.nd')
-# SaveNd(test_data,net,'test_resnet152_v1.nd')
+SaveNd(train_data,net,'train.nd')
+SaveNd(valid_data,net,'valid.nd')
+SaveNd(train_valid_data,net,'input.nd')
 ids = ids = sorted(os.listdir(os.path.join(data_dir, input_dir, 'test/unknown')))
 synsets = train_valid_ds.synsets
 f = open('ids_synsets','wb')

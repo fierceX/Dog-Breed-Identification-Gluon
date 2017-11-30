@@ -4,22 +4,16 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from mxnet import autograd
 from mxnet import gluon
-from mxnet import image
-from mxnet import init
 from mxnet import nd
-from mxnet.gluon.data import vision
-from mxnet.gluon import nn
-from mxnet import nd
-import pandas as pd
 import mxnet as mx
 import pickle
 from model import get_output
 
-train_nd = nd.load('train_inception_v3.nd')
+train_nd = nd.load('train.nd')
 
-valid_nd = nd.load('valid_inception_v3.nd')
+valid_nd = nd.load('valid.nd')
 
-#input_nd = nd.load('input_inception_v3.nd')
+input_nd = nd.load('input.nd')
 
 f = open('ids_synsets','rb')
 ids_synsets = pickle.load(f)
@@ -29,14 +23,12 @@ num_epochs = 100
 batch_size = 128
 learning_rate = 1e-4
 weight_decay = 1e-4
-lr_period = 40
-lr_decay = 0.5
-pngname='2'
-modelparams='2'
+pngname='train.png'
+modelparams='train.params'
 
 train_data = gluon.data.DataLoader(gluon.data.ArrayDataset(train_nd[0],train_nd[1]), batch_size=batch_size,shuffle=True)
 valid_data = gluon.data.DataLoader(gluon.data.ArrayDataset(valid_nd[0],valid_nd[1]), batch_size=batch_size,shuffle=True)
-#input_data = gluon.data.DataLoader(gluon.data.ArrayDataset(input_nd[0],input_nd[1]), batch_size=batch_size,shuffle=True)
+input_data = gluon.data.DataLoader(gluon.data.ArrayDataset(input_nd[0],input_nd[1]), batch_size=batch_size,shuffle=True)
 
 
 def get_loss(data, net, ctx):
@@ -50,8 +42,7 @@ def get_loss(data, net, ctx):
 
 softmax_cross_entropy = gluon.loss.SoftmaxCrossEntropyLoss()
 
-def train(net, train_data, valid_data, num_epochs, lr, wd, ctx, lr_period, 
-          lr_decay):
+def train(net, train_data, valid_data, num_epochs, lr, wd, ctx):
     trainer = gluon.Trainer(
         net.collect_params(), 'adam', {'learning_rate': lr, 'wd': wd})
     train_loss = []
@@ -61,8 +52,6 @@ def train(net, train_data, valid_data, num_epochs, lr, wd, ctx, lr_period,
     prev_time = datetime.datetime.now()
     for epoch in range(num_epochs):
         _loss = 0.
- #       if epoch > 0 and epoch % lr_period == 0:
- #           trainer.set_learning_rate(trainer.learning_rate * lr_decay)
         for data, label in train_data:
             label = label.as_in_context(ctx)
             with autograd.record():
@@ -104,5 +93,4 @@ ctx = mx.gpu()
 net = get_output(ctx)
 net.hybridize()
 
-train(net, train_data,valid_data, num_epochs, learning_rate, weight_decay, 
-      ctx, lr_period, lr_decay)
+train(net, train_data,valid_data, num_epochs, learning_rate, weight_decay, ctx)

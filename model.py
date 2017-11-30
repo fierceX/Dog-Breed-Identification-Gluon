@@ -1,4 +1,3 @@
-from mxnet import gluon
 from mxnet import init
 from mxnet.gluon.model_zoo import vision
 from mxnet.gluon import nn

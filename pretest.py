@@ -4,27 +4,23 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from mxnet import autograd
 from mxnet import gluon
-from mxnet import image
-from mxnet import init
-from mxnet import nd
 from mxnet.gluon.data import vision
-from mxnet.gluon import nn
 from mxnet import nd
-import pandas as pd
 import mxnet as mx
 import pickle
-import numpy as np
 from tqdm import tqdm
 from model import get_net,transform_test
 
 
-data_dir = '../data/kaggle_dog'
+batch_size = 128
+
+data_dir = './data'
 test_dir = 'test'
 input_dir = 'train_valid_test'
 valid_dir = 'valid'
 
-netparams = '2'
-csvname = 'p1.csv'
+netparams = 'train.params'
+csvname = 'kaggle.csv'
 ids_synsets_name = 'ids_synsets'
 
 input_str = data_dir + '/' + input_dir + '/'
@@ -42,8 +38,8 @@ valid_ds = vision.ImageFolderDataset(input_str + valid_dir, flag=1,
 
 loader = gluon.data.DataLoader
 
-test_data = loader(test_ds, 128, shuffle=False, last_batch='keep')
-valid_data = loader(valid_ds, 128, shuffle=True, last_batch='keep')
+test_data = loader(test_ds, batch_size, shuffle=False, last_batch='keep')
+valid_data = loader(valid_ds, batch_size, shuffle=True, last_batch='keep')
 
 def get_loss(data, net, ctx):
     loss = 0.0
