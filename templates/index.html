@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Index</title>
+    <title></title>
+    <link rel="stylesheet" href="{{ static_url("css/uikit.min.css")}}" />
+    <script src="{{ static_url("js/jquery.js")}}"></script>
+    <script src="{{ static_url("js/uikit.min.js")}}"></script>
+</head>
+
+<body>
+    <div  uk-grid class="uk-flex uk-flex-column uk-margin-auto uk-margin-xlarge-top uk-width-1-3">
+
+            <div>
+                    <div class="uk-card uk-card-default uk-card-hover uk-card-body uk-width-1-1@m">
+                            <h3 class="uk-card-title" >{{classname}}</h3>
+                        <img  src="{{imagename}}" alt="Image" />
+                    </div>
+                </div>
+
+        <div>
+            <div class="uk-card uk-card-default uk-card-hover uk-card-body">
+                <form method='post' action='/Updata_Image' enctype=multipart/form-data>
+                     <div class="uk-margin" uk-margin>
+                        <div uk-form-custom="target: true">
+                            <input type="file" name=file>
+                            <input class="uk-input uk-form-width-medium" type="input" placeholder="Select file" disabled>
+                        </div>
+                        <button type="input" class="uk-button uk-button-default">Submit</button>
+                    </div>
+                    <!-- <div class="test-upload" uk-form-custom>
+                            <input type="file" name=file multiple>
+                            <button class="uk-button uk-button-default" type="input" tabindex="-1">Select</button>
+                    </div>
+                    <button type="input" class="uk-button uk-button-default">Submit</button> -->
+
+                </form>
+            </div>
+        </div>
+       
+    </div>
+
+</body>
+
+</html>

@@ -4,6 +4,7 @@ from mxnet.gluon import nn
 from mxnet import image
 import numpy as np
 from mxnet import nd
+import mxnet as mx
 
 def get_features2(ctx):
     resnet = vision.inception_v3(pretrained=True,ctx=ctx)
@@ -20,7 +21,7 @@ def get_features(ctx):
     return net
 
 def get_output(ctx,ParamsName=None):
-    net = nn.HybridSequential()
+    net = nn.HybridSequential("output")
     with net.name_scope():
         net.add(nn.Dense(256, activation="relu"))
         net.add(nn.Dropout(.7))
@@ -98,3 +99,42 @@ def transform_test(data, label):
     im1 = nd.transpose(im1, (2,0,1))
     im2 = nd.transpose(im2, (2,0,1))
     return (im1,im2, nd.array([label]).asscalar().astype('float32'))
+
+class Net():
+    def __init__(self,ctx,nameparams=None):
+        inception = vision.inception_v3(pretrained=True,ctx=ctx).features
+        resnet = vision.resnet152_v1(pretrained=True,ctx=ctx).features
+        self.features = ConcatNet(resnet,inception)
+        self.output = get_output(ctx,nameparams)
+        self.net = OneNet(self.features,self.output)
+    def __get_output(ctx,ParamsName=None):
+        net = nn.HybridSequential("output")
+        with net.name_scope():
+            net.add(nn.BatchNorm())
+            net.add(nn.Dense(1024))
+            net.add(nn.BatchNorm())
+            net.add(nn.Activation('relu'))
+            net.add(nn.Dropout(.5))
+            net.add(nn.Dense(120))
+        if ParamsName is not None:
+            net.collect_params().load(ParamsName,ctx)
+        else:
+            net.initialize(init = init.Xavier(),ctx=ctx)
+        return net
+
+class Pre():
+    def __init__(self,nameparams,idx,ctx=0):
+        self.idx = idx
+        if ctx == 0:
+            self.ctx = mx.cpu()
+        if ctx == 1:
+            self.ctx = mx.gpu()
+        self.net = Net(self.ctx,nameparams=nameparams).net
+        self.Timg = transform_test
+    def PreImg(self,img):
+        imgs = self.Timg(img,None)
+        out = nd.softmax(self.net(nd.reshape(imgs[0],(1,3,224,224)).as_in_context(self.ctx),nd.reshape(imgs[1],(1,3,299,299)).as_in_context(self.ctx))).asnumpy()
+        return self.idx[np.where(out == out.max())[1][0]]
+    def PreName(self,Name):
+        img = image.imread(Name)
+        return self.PreImg(img)
