@@ -4,41 +4,73 @@
 <head>
     <title>Index</title>
     <title></title>
-    <link rel="stylesheet" href="{{ static_url("css/uikit.min.css")}}" />
-    <script src="{{ static_url("js/jquery.js")}}"></script>
-    <script src="{{ static_url("js/uikit.min.js")}}"></script>
+    <link rel="stylesheet" href="{{ static_url("css/uikit.min.css ")}}" />
+    <script src="{{ static_url("js/jquery.js ")}}"></script>
+    <script src="{{ static_url("js/uikit.min.js ")}}"></script>
 </head>
 
 <body>
-    <div  uk-grid class="uk-flex uk-flex-column uk-margin-auto uk-margin-xlarge-top uk-width-1-3">
+    <div uk-grid class="uk-flex uk-flex-column">
+        <div class=" uk-background-primary uk-position-top" uk-grid>
 
-            <div>
-                    <div class="uk-card uk-card-default uk-card-hover uk-card-body uk-width-1-1@m">
-                            <h3 class="uk-card-title" >{{classname}}</h3>
-                        <img  src="{{imagename}}" alt="Image" />
-                    </div>
+            <div class="uk-card uk-card-body uk-card-primary uk-width-1-1 ">
+                <h3 class="uk-card-title uk-position-center">汪星人种族鉴定</h3>
+
+            </div>
+
+        </div>
+
+
+        <div uk-grid>
+            <div class="uk-margin-auto uk-margin-large-top ">
+                <div class="uk-card uk-card-default uk-card-hover  uk-card-body">
+                    <h3 class="uk-card-title">{{classname}}</h3>
+                    <img src="{{imagename}}" />
                 </div>
-
-        <div>
-            <div class="uk-card uk-card-default uk-card-hover uk-card-body">
-                <form method='post' action='/Updata_Image' enctype=multipart/form-data>
-                     <div class="uk-margin" uk-margin>
-                        <div uk-form-custom="target: true">
-                            <input type="file" name=file>
-                            <input class="uk-input uk-form-width-medium" type="input" placeholder="Select file" disabled>
-                        </div>
-                        <button type="input" class="uk-button uk-button-default">Submit</button>
-                    </div>
-                    <!-- <div class="test-upload" uk-form-custom>
-                            <input type="file" name=file multiple>
-                            <button class="uk-button uk-button-default" type="input" tabindex="-1">Select</button>
-                    </div>
-                    <button type="input" class="uk-button uk-button-default">Submit</button> -->
-
-                </form>
             </div>
         </div>
-       
+
+
+        <div uk-grid>
+            <div class="uk-margin-auto uk-margin-xlarge-bottom  ">
+                <div class="uk-card uk-card-default  uk-card-hover uk-card-body">
+                    <form method='post' action='/Updata_Image' enctype=multipart/form-data>
+                        <div class="uk-margin" uk-margin>
+                            <div uk-form-custom="target: true">
+                                <input type="file" name=file>
+                                <input class="uk-input uk-form-width-medium" type="text" placeholder="Select file" disabled>
+                            </div>
+                            <button class="uk-button uk-button-default">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <div class=" uk-background-secondary uk-position-bottom uk-position-fixed" uk-grid>
+            <div class="uk-margin-auto uk-grid-small uk-flex uk-flex-row" uk-grid>
+                <div class="uk-card uk-card-body uk-card-secondary" title="这是一个基于Python的Web框架和服务器" uk-tooltip>
+                    <a href="http://www.tornadoweb.org" target="_blank">
+                        <img width="100" src="{{static_url("icon/tornado.png ")}}" />
+                    </a>
+                </div>
+                <div class="uk-card uk-card-body uk-card-secondary" title="这是一个深度学习框架Mxnet的Python前端接口" uk-tooltip>
+                    <a href="http://zh.gluon.ai/" target="_blank">
+                        <img width="150" src="{{static_url("icon/gluon.png ")}}" />
+                    </a>
+
+                </div>
+                <div class="uk-card uk-card-body uk-card-secondary " title="这是一个Web前端框架" uk-tooltip>
+                    <a href="https://getuikit.com/" target="_blank">
+                        <img width="90" src="{{static_url("icon/uikit.svg ")}}" />
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
     </div>
 
 </body>

@@ -29,7 +29,7 @@ def RemoveFile(dirhname):
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render('index.html',imagename=None,classname=None)
+        self.render('index.html',imagename="",classname="")
 
 class Update_Image(tornado.web.RequestHandler):
     def post(self):
@@ -39,6 +39,7 @@ class Update_Image(tornado.web.RequestHandler):
         f.write(img['body'])
         f.close()
         classname = PP.PreName("./static/image/"+img['filename']).lower()
+        # classname = None
         self.render('index.html',imagename="./static/image/"+img['filename'],classname = classname)
 
 if __name__ == '__main__':
