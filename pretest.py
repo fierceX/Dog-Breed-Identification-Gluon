@@ -9,10 +9,10 @@ from mxnet import nd
 import mxnet as mx
 import pickle
 from tqdm import tqdm
-from model import get_net,transform_test
+from model import Net,transform_test
 
 
-batch_size = 128
+batch_size = 32
 
 data_dir = './data'
 test_dir = 'test'
@@ -65,7 +65,8 @@ def SaveTest(test_data,net,ctx,name,ids,synsets):
             f.write(i.split('.')[0] + ',' + ','.join(
                 [str(num) for num in output]) + '\n')
 
-net = get_net(netparams,mx.gpu())
+net = Net(mx.gpu(),netparams).net
+#net = get_net(netparams,mx.gpu())
 net.hybridize()
 
 softmax_cross_entropy = gluon.loss.SoftmaxCrossEntropyLoss()

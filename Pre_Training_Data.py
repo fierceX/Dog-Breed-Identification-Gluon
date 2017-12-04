@@ -6,7 +6,7 @@ import mxnet as mx
 import pickle
 from tqdm import tqdm
 import os
-from model import get_features,transform_train,transform_test
+from model import Net,transform_train,transform_test
 
 data_dir = './data'
 train_dir = 'train'
@@ -19,7 +19,7 @@ train_valid_dir = 'train_valid'
 input_str = data_dir + '/' + input_dir + '/'
 
 
-batch_size = 128
+batch_size = 32
 
 train_ds = vision.ImageFolderDataset(input_str + train_dir, flag=1,
                                      transform=transform_train)
@@ -33,9 +33,9 @@ train_data = loader(train_ds, batch_size, shuffle=True, last_batch='keep')
 valid_data = loader(valid_ds, batch_size, shuffle=True, last_batch='keep')
 train_valid_data = loader(train_valid_ds, batch_size, shuffle=True,
                           last_batch='keep')
-test_data = loader(test_ds, batch_size, shuffle=False, last_batch='keep')
 
-net = get_features(mx.gpu())
+#net = get_features(mx.gpu())
+net = Net(mx.gpu()).features
 net.hybridize()
 
 

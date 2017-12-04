@@ -6,32 +6,6 @@ import numpy as np
 from mxnet import nd
 import mxnet as mx
 
-def get_features2(ctx):
-    resnet = vision.inception_v3(pretrained=True,ctx=ctx)
-    return resnet.features
-
-def get_features1(ctx):
-    resnet = vision.resnet152_v1(pretrained=True,ctx=ctx)
-    return resnet.features
-
-def get_features(ctx):
-    features1 = get_features1(ctx)
-    features2 = get_features2(ctx)
-    net = ConcatNet(features1,features2)
-    return net
-
-def get_output(ctx,ParamsName=None):
-    net = nn.HybridSequential("output")
-    with net.name_scope():
-        net.add(nn.Dense(256, activation="relu"))
-        net.add(nn.Dropout(.7))
-        net.add(nn.Dense(120))
-    if ParamsName is not None:
-        net.collect_params().load(ParamsName,ctx)
-    else:
-        net.initialize(init = init.Xavier(),ctx=ctx)
-    return net
-
 class  ConcatNet(nn.HybridBlock):
     def __init__(self,net1,net2,**kwargs):
         super(ConcatNet,self).__init__(**kwargs)
@@ -52,11 +26,6 @@ class  OneNet(nn.HybridBlock):
     def hybrid_forward(self,F,x1,x2):
         return self.output(self.features(x1,x2))
 
-def get_net(ParamsName,ctx):
-    output = get_output(ctx,ParamsName)
-    features = get_features(ctx)
-    net = OneNet(features,output)
-    return net
 
 def transform_train(data, label):
     im1 = image.imresize(data.astype('float32') / 255, 224, 224)
@@ -105,15 +74,12 @@ class Net():
         inception = vision.inception_v3(pretrained=True,ctx=ctx).features
         resnet = vision.resnet152_v1(pretrained=True,ctx=ctx).features
         self.features = ConcatNet(resnet,inception)
-        self.output = get_output(ctx,nameparams)
+        self.output = self.__get_output(ctx,nameparams)
         self.net = OneNet(self.features,self.output)
-    def __get_output(ctx,ParamsName=None):
+    def __get_output(self,ctx,ParamsName=None):
         net = nn.HybridSequential("output")
         with net.name_scope():
-            net.add(nn.BatchNorm())
-            net.add(nn.Dense(1024))
-            net.add(nn.BatchNorm())
-            net.add(nn.Activation('relu'))
+            net.add(nn.Dense(256,activation='relu'))
             net.add(nn.Dropout(.5))
             net.add(nn.Dense(120))
         if ParamsName is not None:
