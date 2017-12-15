@@ -7,7 +7,7 @@ from mxnet import gluon
 from mxnet import nd
 import mxnet as mx
 import pickle
-from model import get_output
+from model import Net
 
 train_nd = nd.load('train.nd')
 
@@ -90,7 +90,7 @@ def train(net, train_data, valid_data, num_epochs, lr, wd, ctx):
     net.collect_params().save(modelparams)
 
 ctx = mx.gpu()
-net = get_output(ctx)
+net = Net(ctx).output
 net.hybridize()
 
 train(net, train_data,valid_data, num_epochs, learning_rate, weight_decay, ctx)
